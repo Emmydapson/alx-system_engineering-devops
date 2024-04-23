@@ -1,31 +1,24 @@
 #!/usr/bin/python3
-"""
-python script that create an API using the below url
-
-"""
+""" Export api to csv"""
 import csv
-import json
+import requests
 import sys
-import urllib.request
 
 if __name__ == '__main__':
-    employeeId = sys.argv[1]
-    baseUrl = "https://jsonplaceholder.typicode.com/users"
-    url = baseUrl + "/" + employeeId
+    user = sys.argv[1]
+    url_user = 'https://jsonplaceholder.typicode.com/users/' + user
+    res = requests.get(url_user)
+    """ANYTHING"""
+    user_name = res.json().get('username')
+    task = url_user + '/todos'
+    res = requests.get(task)
+    tasks = res.json()
 
-    with urllib.request.urlopen(url) as response:
-        data = json.loads(response.read().decode())
-        userName = data.get('username')
-
-    todoUrl = url + "/todos"
-    with urllib.request.urlopen(todoUrl) as response:
-        tasks = json.loads(response.read().decode())
-
-    with open('{}.csv'.format(employeeId), mode='w', newline='') as file:
+    with open('{}.csv'.format(user), 'w') as csvfile:
         for task in tasks:
-            file.write(
-                '"{}","{}","{}","{}"\n'.format(
-                    employeeId,
-                    userName,
-                    task.get('completed'),
-                    task.get('ti
+            completed = task.get('completed')
+            """Complete"""
+            title_task = task.get('title')
+            """Done"""
+            csvfile.write('"{}","{}","{}","{}"\n'.format(
+                user, user_name, completed, title_task))
